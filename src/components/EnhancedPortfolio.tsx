@@ -2,7 +2,27 @@ import { useState, useEffect } from 'react'
 import { ArrowUpRight, Github, Linkedin, Terminal, Moon, Sun, ChevronDown, Mail, Phone, MapPin, FileText } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-type ColorTheme = 'green' | 'blue' | 'purple' | 'red' | 'orange' | 'pink' | 'cyan' | 'rainbow'
+type ColorTheme = 'green' | 'blue' | 'purple' | 'red' | 'orange' | 'pink' | 'cyan' | 'rainbow';
+interface StyleConfig {
+  window: string;
+  header: string;
+  buttons: string;
+  button: string;
+  title: string;
+  content: string;
+  animation: {
+    initial: any;
+    animate: any;
+    transition: any;
+  };
+}
+
+
+
+// Add WindowStyle type
+type WindowStyle = 'modern' | 'retro' | 'minimal' | 'glass' | 'neon' | 'matrix' | 'cyberpunk' | 'gradient' | 'vaporwave' | 'paper';
+
+
 
 export default function EnhancedPortfolio() {
   const [activeWindow, setActiveWindow] = useState('about')
@@ -12,6 +32,7 @@ export default function EnhancedPortfolio() {
   const [terminalStyle, setTerminalStyle] = useState<WindowProps['style']>('modern')
   const [colorTheme, setColorTheme] = useState<ColorTheme>('green')
   const [isThemeControlsOpen, setIsThemeControlsOpen] = useState(false)
+
 
   useEffect(() => {
     // Handle scroll to update active window
@@ -49,17 +70,22 @@ export default function EnhancedPortfolio() {
     }
   }, [isDarkMode])
 
-  // Window component with TypeScript props
+
   interface WindowProps {
-    title: string
-    children: React.ReactNode
-    isActive?: boolean
-    style?: 'modern' | 'retro' | 'minimal' | 'glass' | 'neon' | 'matrix' | 'cyberpunk' | 'gradient' |
-    'vaporwave' | 'paper'
+    title: string;
+    children: React.ReactNode;
+    isActive?: boolean;
+    style?: WindowStyle;
   }
 
-  const Window = ({ title, children, isActive = false, style = terminalStyle }: WindowProps) => {
-    const styles = {
+
+  interface NavLinkProps {
+    href: string;
+    children: React.ReactNode;
+  }
+
+  const Window = ({ title, children, isActive = false, style = "modern" }: WindowProps) => {
+    const styles: Record<WindowStyle, StyleConfig> = {
       modern: {
         window: `bg-black/80 backdrop-blur-sm rounded-lg border border-${colorTheme}-500/20`,
         header: `px-4 py-2 border-b border-${colorTheme}-500/20`,
@@ -241,8 +267,8 @@ export default function EnhancedPortfolio() {
   }
 
   // Helper function for button colors
-  const getButtonColor = (style: string, type: 'close' | 'minimize' | 'maximize') => {
-    const colors = {
+  const getButtonColor = (style: WindowStyle, type: 'close' | 'minimize' | 'maximize'): string => {
+    const colors: Record<WindowStyle, Record<string, string>> = {
       modern: { close: 'bg-red-500', minimize: 'bg-yellow-500', maximize: 'bg-green-500' },
       retro: { close: 'bg-green-500/50', minimize: 'bg-green-500/50', maximize: 'bg-green-500/50' },
       glass: { close: 'bg-white/20', minimize: 'bg-white/20', maximize: 'bg-white/20' },
@@ -252,11 +278,13 @@ export default function EnhancedPortfolio() {
       gradient: { close: 'bg-gradient-to-r from-purple-500 to-pink-500', minimize: 'bg-gradient-to-r from-pink-500 to-red-500', maximize: 'bg-gradient-to-r from-red-500 to-orange-500' },
       vaporwave: { close: 'bg-pink-500', minimize: 'bg-purple-500', maximize: 'bg-blue-500' },
       paper: { close: 'bg-red-400', minimize: 'bg-amber-400', maximize: 'bg-emerald-400' },
-    }
-    return colors[style]?.[type] || colors.modern[type]
-  }
+      minimal: { close: '', minimize: '', maximize: '' }
+    };
 
-  const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
+    return colors[style]?.[type] || colors.modern[type];
+  };
+
+  const NavLink: React.FC<NavLinkProps> = ({ href, children }: { href: string; children: React.ReactNode }) => {
     const isActive = activeWindow === href.replace('#', '')
 
     return (
@@ -457,7 +485,7 @@ export default function EnhancedPortfolio() {
   }
 
   const getThemeColor = (opacity = 1) => {
-    const colors = {
+    const colors: Record<string, string> = {
       green: `rgba(34, 197, 94, ${opacity})`,
       blue: `rgba(59, 130, 246, ${opacity})`,
       purple: `rgba(168, 85, 247, ${opacity})`,
@@ -636,7 +664,7 @@ export default function EnhancedPortfolio() {
                       <div className="flex gap-4 items-center hover:bg-zinc-800/50 px-2 py-4 rounded transition-colors">
                         <span className="text-zinc-600 select-none">02</span>
                         <span className={`${isDarkMode ? 'text-white' : 'text-black'}`}>
-                          With <span className="text-yellow-500">6+ months</span> of experience in building
+                          With <span className="text-yellow-500">10+ months</span> of experience in building
                           <span className="text-purple-400"> scalable applications</span>
                         </span>
                       </div>
@@ -707,7 +735,7 @@ export default function EnhancedPortfolio() {
                           Frameworks & Libraries
                         </h3>
                         <div className="flex flex-wrap gap-3">
-                          {['Vue', 'Flask', 'FastAPI', 'React', 'Tailwind', 'Shadcn', 'Node', 'Express'].map(skill => (
+                          {['React', 'React Router', 'Tailwind', 'Shadcn', 'Vue', 'FastAPI', 'Node', 'Express'].map(skill => (
                             <motion.span
                               key={skill}
                               whileHover={{ scale: 1.05 }}
@@ -860,31 +888,32 @@ export default function EnhancedPortfolio() {
                       <ul className="space-y-3 text-zinc-400">
                         <li className="flex gap-2">
                           <span className="text-green-500">→</span>
-                          <span>Successfully learned and applied a new technology stack (Vue.js) to meet project demands within tight deadlines</span>
+                          <span>Revamped the frontend architecture of a high-performance SaaS platform, migrating from Vue.js to React Router v7.</span>
                         </li>
                         <li className="flex gap-2">
                           <span className="text-green-500">→</span>
-                          <span>Single-handedly developed the frontend of an internal project from scratch, mastering Vue.js and creating seamless user experiences</span>
+                          <span>Seamlessly integrated multiple data sources with Snowflake, optimizing data visualization, user interactions, and system responsiveness while enhancing scalability and cost efficiency.
+                          </span>
                         </li>
                         <li className="flex gap-2">
                           <span className="text-green-500">→</span>
-                          <span>Independently designed pixel-perfect, fully responsive interfaces using Tailwind CSS</span>
+                          <span>Designed and optimized a pixel-perfect, fully responsive UI with Tailwind CSS, reducing page load times by 30% and improving user engagement.</span>
                         </li>
                         <li className="flex gap-2">
                           <span className="text-green-500">→</span>
-                          <span> Collaborated directly with end users to refine and clarify requirements, ensuring alignment with their expectations.</span>
+                          <span>Implemented a full-stack framework with React Router v7 for SSR, improving performance and reducing rendering times by 40%.</span>
                         </li>
                         <li className="flex gap-2">
                           <span className="text-green-500">→</span>
-                          <span>Conducted in-depth research to implement the most efficient and scalable solutions tailored to project needs.</span>
+                          <span>Enhanced user experience through end-user feedback, increasing adoption rates by 25%.</span>
                         </li>
                         <li className="flex gap-2">
                           <span className="text-green-500">→</span>
-                          <span>Proposed and implemented the transition from Fivetran to Airbyte for ETL processes, reducing operational costs by 10 times.</span>
+                          <span>Integrated Anthropic AI API to provide one-click AI-generated summaries, key insights, and annotations, improving data interpretation and decision-making.</span>
                         </li>
                       </ul>
                       <div className="flex flex-wrap gap-2 pt-2">
-                        {['Vue', 'Tailwind', 'FastAPI', 'Python', 'Snowflake', 'Docker', '3rd Party Integrations'].map((tech) => (
+                        {['React', 'React Router v7', 'Tailwind', 'FastAPI', 'Python', 'Snowflake', 'Docker', '3rd Party Integrations'].map((tech) => (
                           <span key={tech} className={`px-2 py-1 rounded-full bg-zinc-800/50 text-xs ${isDarkMode ? 'text-zinc-200' : 'text-white'}`}>
                             {tech}
                           </span>
