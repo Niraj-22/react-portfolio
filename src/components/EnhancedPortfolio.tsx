@@ -876,7 +876,7 @@ export default function EnhancedPortfolio() {
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
                         <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-black'}`}>
-                          Frontend Developer
+                          Software Engineer
                         </h3>
                         <span className="text-green-500 font-mono text-sm">Jul 2024 - Present</span>
                       </div>
