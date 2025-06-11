@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { ArrowUpRight, Github, Linkedin, Terminal, Moon, Sun, ChevronDown, Mail, Phone, MapPin, FileText } from 'lucide-react'
+import { ArrowUpRight, Github, Linkedin, Terminal, ChevronDown, Mail, Phone, MapPin, FileText } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-type ColorTheme = 'green' | 'blue' | 'purple' | 'red' | 'orange' | 'pink' | 'cyan' | 'rainbow';
+type ColorTheme = 'green' | 'blue' | 'purple' | 'pink';
 interface StyleConfig {
   window: string;
   header: string;
@@ -19,6 +19,57 @@ interface StyleConfig {
 
 
 
+interface ColorThemeProps {
+  primary: string;
+  accent: string;
+  gradient: string;
+}
+
+interface ThemeControlProps {
+  colorTheme: ColorTheme;
+  setColorTheme: (theme: ColorTheme) => void;
+
+}
+
+const colorThemeClasses: Record<ColorTheme, {
+  text: string;
+  bg: string;
+  border: string;
+  ring: string;
+  shadow: string;
+}> = {
+  green: {
+    text: 'text-green-400',
+    bg: 'bg-green-500',
+    border: 'border-green-500/20',
+    ring: 'ring-green-400 ring-offset-black',
+    shadow: 'shadow-green-500/10',
+  },
+  blue: {
+    text: 'text-blue-400',
+    bg: 'bg-blue-500',
+    border: 'border-blue-500/20',
+    ring: 'ring-blue-400 ring-offset-black',
+    shadow: 'shadow-blue-500/10',
+  },
+  purple: {
+    text: 'text-purple-400',
+    bg: 'bg-purple-500',
+    border: 'border-purple-500/20',
+    ring: 'ring-purple-400 ring-offset-black',
+    shadow: 'shadow-purple-500/10',
+  },
+  pink: {
+    text: 'text-pink-400',
+    bg: 'bg-pink-500',
+    border: 'border-pink-500/20',
+    ring: 'ring-pink-400 ring-offset-black',
+    shadow: 'shadow-pink-500/10',
+  },
+};
+
+
+
 // Add WindowStyle type
 type WindowStyle = 'modern' | 'retro' | 'minimal' | 'glass' | 'neon' | 'matrix' | 'cyberpunk' | 'gradient' | 'vaporwave' | 'paper';
 
@@ -26,12 +77,10 @@ type WindowStyle = 'modern' | 'retro' | 'minimal' | 'glass' | 'neon' | 'matrix' 
 
 export default function EnhancedPortfolio() {
   const [activeWindow, setActiveWindow] = useState('about')
-  const [isDarkMode, setIsDarkMode] = useState(true)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [terminalStyle, setTerminalStyle] = useState<WindowProps['style']>('modern')
-  const [colorTheme, setColorTheme] = useState<ColorTheme>('green')
-  const [isThemeControlsOpen, setIsThemeControlsOpen] = useState(false)
+  const [colorTheme, setColorTheme] = useState<'green' | 'blue' | 'purple' | 'pink'>('green');
+
 
 
   useEffect(() => {
@@ -61,14 +110,7 @@ export default function EnhancedPortfolio() {
     return () => clearTimeout(timer)
   }, [])
 
-  useEffect(() => {
-    // Update terminal style when dark mode changes
-    if (!isDarkMode) {
-      setTerminalStyle('paper')
-    } else {
-      setTerminalStyle('modern') // or whatever default dark theme you prefer
-    }
-  }, [isDarkMode])
+
 
 
   interface WindowProps {
@@ -344,23 +386,22 @@ export default function EnhancedPortfolio() {
                 Resume
               </motion.a>
             </li>
-            <li>
-              <button
-                onClick={() => setIsDarkMode(!isDarkMode)}
-                className="text-zinc-400 hover:text-green-500 transition-colors"
-                aria-label="Toggle dark mode"
-              >
-                {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </button>
-            </li>
+
           </ul>
         </div>
       </nav>
     )
   }
 
-  const ThemeControls = () => {
-    const colorThemes = {
+
+  const ThemeControls = ({
+    colorTheme,
+    setColorTheme,
+
+  }: ThemeControlProps) => {
+    const [isThemeControlsOpen, setIsThemeControlsOpen] = useState(false);
+
+    const colorThemes: Record<ColorTheme, ColorThemeProps> = {
       green: {
         primary: 'rgb(34, 197, 94)',
         accent: 'rgb(21, 128, 61)',
@@ -381,8 +422,9 @@ export default function EnhancedPortfolio() {
         accent: 'rgb(190, 24, 93)',
         gradient: 'from-pink-500/20 to-pink-600/20'
       },
+    };
 
-    }
+    const classes = colorThemeClasses[colorTheme];
 
     return (
       <motion.div
@@ -393,18 +435,14 @@ export default function EnhancedPortfolio() {
         <motion.div
           initial={false}
           animate={{ height: isThemeControlsOpen ? 'auto' : '48px' }}
-          className={`bg-black/90 backdrop-blur-md rounded-lg border border-${colorTheme}-500/20 
-            shadow-lg shadow-${colorTheme}-500/10 overflow-hidden
-            transition-colors duration-300`}
+          className={`bg-black/90 backdrop-blur-md rounded-lg border ${classes.border} shadow-lg ${classes.shadow} overflow-hidden transition-colors duration-300`}
         >
           <button
             onClick={() => setIsThemeControlsOpen(!isThemeControlsOpen)}
-            className={`w-full px-4 py-2 flex items-center justify-between 
-              text-${colorTheme}-400 hover:text-${colorTheme}-300 
-              transition-all duration-300`}
+            className={`w-full px-4 py-2 flex items-center justify-between ${classes.text} hover:opacity-80 transition-all duration-300`}
           >
             <span className="text-sm font-mono flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full bg-${colorTheme}-500 animate-pulse`} />
+              <div className={`w-2 h-2 rounded-full ${classes.bg} animate-pulse`} />
               Theme Controls
             </span>
             <motion.div
@@ -421,68 +459,48 @@ export default function EnhancedPortfolio() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className={`p-4 border-t border-${colorTheme}-500/20`}
+                className={`p-4 border-t ${classes.border}`}
               >
                 {/* Color Theme Selection */}
                 <div className="space-y-4">
-                  <h3 className={`text-sm font-mono text-${colorTheme}-400`}>Color Theme</h3>
+                  <h3 className={`text-sm font-mono ${classes.text}`}>Color Theme</h3>
                   <div className="grid grid-cols-4 gap-2">
-                    {Object.entries(colorThemes).map(([theme, colors]) => (
-                      <motion.button
-                        key={theme}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => setColorTheme(theme as ColorTheme)}
-                        className={`w-8 h-8 rounded-full relative 
-                          ${colorTheme === theme
-                            ? `ring-2 ring-${theme}-400 ring-offset-2 ring-offset-black`
-                            : ''}`}
-                        style={{
-                          background: colors.primary,
-                          boxShadow: `0 0 20px ${theme === 'rainbow'
-                            ? 'rgba(124, 58, 237, 0.2)'
-                            : colors.primary}40`
-                        }}
-                      >
-                        {colorTheme === theme && (
-                          <motion.div
-                            layoutId="selectedColor"
-                            className={`absolute inset-0 rounded-full border-2 border-${theme}-400`}
-                            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                          />
-                        )}
-                      </motion.button>
-                    ))}
+                    {(Object.keys(colorThemes) as ColorTheme[]).map((theme) => {
+                      const isSelected = colorTheme === theme;
+                      const themeClasses = colorThemeClasses[theme];
+                      return (
+                        <motion.button
+                          key={theme}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => setColorTheme(theme)}
+                          className={`w-8 h-8 rounded-full relative ${isSelected ? `${themeClasses.ring}` : ''}`}
+                          style={{
+                            background: colorThemes[theme].primary,
+                            boxShadow: `0 0 20px ${colorThemes[theme].primary}40`
+                          }}
+                        >
+                          {isSelected && (
+                            <motion.div
+                              layoutId="selectedColor"
+                              className="absolute inset-0 rounded-full border-2 border-white"
+                              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                            />
+                          )}
+                        </motion.button>
+                      );
+                    })}
                   </div>
                 </div>
 
-                {/* Terminal Style Selection */}
-                <div className="mt-6 space-y-4">
-                  <h3 className={`text-sm font-mono text-${colorTheme}-400`}>Terminal Style</h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    {['modern', 'retro', 'minimal', 'glass', 'neon', 'matrix', 'cyberpunk', 'gradient', 'vaporwave', 'paper'].map((style) => (
-                      <motion.button
-                        key={style}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setTerminalStyle(style as WindowProps['style'])}
-                        className={`px-3 py-2 rounded-md text-xs font-mono transition-all duration-300
-                          ${terminalStyle === style
-                            ? `bg-${colorTheme}-500 text-black font-medium shadow-md shadow-${colorTheme}-500/20`
-                            : `text-${colorTheme}-400 hover:text-${colorTheme}-300 bg-black/50 hover:bg-black/70`}`}
-                      >
-                        {style}
-                      </motion.button>
-                    ))}
-                  </div>
-                </div>
+
               </motion.div>
             )}
           </AnimatePresence>
         </motion.div>
       </motion.div>
-    )
-  }
+    );
+  };
 
   const getThemeColor = (opacity = 1) => {
     const colors: Record<string, string> = {
@@ -498,9 +516,8 @@ export default function EnhancedPortfolio() {
     <div
       className="min-h-screen transition-all duration-500"
       style={{
-        background: isDarkMode
-          ? `linear-gradient(to bottom right, rgb(0, 0, 0), rgba(0, 0, 0, 0.9), ${getThemeColor(0.1)})`
-          : `linear-gradient(to bottom right, rgb(255, 255, 255), rgb(243, 244, 246), ${getThemeColor(0.1)})`
+        background: `linear-gradient(to bottom right, rgb(0, 0, 0), rgba(0, 0, 0, 0.9), ${getThemeColor(0.1)})`
+
       }}
     >
       {isLoading ? (
@@ -514,7 +531,9 @@ export default function EnhancedPortfolio() {
         </motion.div>
       ) : (
         <>
-          <ThemeControls />
+          <ThemeControls colorTheme={colorTheme}
+            setColorTheme={setColorTheme}
+          />
           <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm">
             <nav className="container mx-auto px-6 py-4">
               <Navigation />
@@ -541,13 +560,13 @@ export default function EnhancedPortfolio() {
                   transition={{ delay: 0.2 }}
                   className="mb-4"
                 >
-                  <span className={`text-lg ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>
+                  <span className={`text-lg text-zinc-400`}>
                     <span className='animate-pulse'>👋</span> Welcome to my portfolio
                   </span>
                 </motion.div>
 
                 {/* Main Heading */}
-                <h1 className={`text-5xl md:text-7xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-black'}`}>
+                <h1 className={`text-5xl md:text-7xl font-bold mb-6 text-white`}>
                   Hi, <span className="text-green-500">I'm</span>{' '}
                   <span className="relative">
                     Niraj Chordia
@@ -566,7 +585,7 @@ export default function EnhancedPortfolio() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className={`text-xl max-w-2xl mx-auto mb-8 ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}
+                  className={`text-xl max-w-2xl mx-auto mb-8 text-zinc-400`}
                 >
                   I'm a Software Engineer specializing in{' '}
                   <span className="text-green-500 font-semibold">full-stack development</span> {" "}
@@ -641,7 +660,7 @@ export default function EnhancedPortfolio() {
                     transition={{ duration: 1.5, repeat: Infinity }}
                     className="flex flex-col items-center gap-2"
                   >
-                    <span className={`text-sm ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>Scroll to explore</span>
+                    <span className={`text-sm text-zinc-400`}>Scroll to explore</span>
                     <ChevronDown className="w-5 h-5 text-green-500" />
                   </motion.div>
                 </motion.div>
@@ -649,56 +668,56 @@ export default function EnhancedPortfolio() {
             </section>
 
             <section id="about" className="py-20">
-              <h2 className={`text-3xl font-bold mb-8 text-center ${isDarkMode ? 'text-white' : 'text-black'}`}>About Me</h2>
+              <h2 className={`text-3xl font-bold mb-8 text-center text-white`}>About Me</h2>
               <div className="grid md:grid-cols-2 gap-6">
                 <Window title="about-me.txt" isActive>
                   <div className="font-mono space-y-4 text-zinc-300">
                     <div className="typing-effect">
                       <div className="flex gap-4 items-center hover:bg-zinc-800/50 px-2 py-4 rounded transition-colors">
                         <span className="text-zinc-600 select-none">01</span>
-                        <span className={`${isDarkMode ? 'text-white' : 'text-black'}`}>
+                        <span className='text-white'>
                           Hi! I'm <span className="text-green-500 font-semibold">Niraj Chordia</span>,
                           a <span className="text-blue-400 font-semibold">Frontend Developer</span> at DViO Digital.
                         </span>
                       </div>
                       <div className="flex gap-4 items-center hover:bg-zinc-800/50 px-2 py-4 rounded transition-colors">
                         <span className="text-zinc-600 select-none">02</span>
-                        <span className={`${isDarkMode ? 'text-white' : 'text-black'}`}>
+                        <span className='text-white'>
                           With <span className="text-yellow-500">10+ months</span> of experience in building
                           <span className="text-purple-400"> scalable applications</span>
                         </span>
                       </div>
                       <div className="flex gap-4 items-center hover:bg-zinc-800/50 px-2 py-4 rounded transition-colors">
                         <span className="text-zinc-600 select-none">03</span>
-                        <span className={`${isDarkMode ? 'text-white' : 'text-black'}`}>
+                        <span className='text-white'>
                           Specializing in <span className="text-pink-400">frontend development</span> and
                           <span className="text-orange-400"> full-stack development</span>
                         </span>
                       </div>
                       <div className="flex gap-4 items-center hover:bg-zinc-800/50 px-2 py-4 rounded transition-colors">
                         <span className="text-zinc-600 select-none">04</span>
-                        <span className={`${isDarkMode ? 'text-white' : 'text-black'}`}>
+                        <span className='text-white'>
                           Passionate about <span className="text-green-400">clean code</span> and
                           <span className="text-blue-400"> optimal solutions</span>
                         </span>
                       </div>
                       <div className="flex gap-4 items-center hover:bg-zinc-800/50 px-2 py-4 rounded transition-colors">
                         <span className="text-zinc-600 select-none">05</span>
-                        <span className={`${isDarkMode ? 'text-white' : 'text-black'}`}>
+                        <span className='text-white'>
                           Skilled in collaborating with  <span className="text-yellow-500">cross-functional teams</span> to deliver
                           <span className="text-purple-400"> end-user-focused solutions.</span>
                         </span>
                       </div>
                       <div className="flex gap-4 items-center hover:bg-zinc-800/50 px-2 py-4 rounded transition-colors">
                         <span className="text-zinc-600 select-none">06</span>
-                        <span className={`${isDarkMode ? 'text-white' : 'text-black'}`}>
+                        <span className='text-white'>
                           Enthusiastic about learning  <span className="text-orange-400">emerging technologies</span> and implementing
                           <span className="text-pink-400"> best practices in development.</span>
                         </span>
                       </div>
                       <div className="flex gap-4 items-center hover:bg-zinc-800/50 px-2 py-4 rounded transition-colors">
                         <span className="text-zinc-600 select-none">07</span>
-                        <span className={`${isDarkMode ? 'text-white' : 'text-black'}`}>
+                        <span className='text-white'>
                           Proven ability to manage entire <span className="text-green-400">frontend projects independently</span> from
                           <span className="text-blue-400"> ideation to deployment.</span>
                         </span>
@@ -790,7 +809,7 @@ export default function EnhancedPortfolio() {
             </section>
 
             <section id="projects" className="py-20">
-              <h2 className={`text-3xl font-bold mb-8 text-center ${isDarkMode ? 'text-white' : 'text-black'}`}>Projects</h2>
+              <h2 className={`text-3xl font-bold mb-8 text-center text-white`}>Projects</h2>
               <Window title="projects.json" isActive>
                 <div className="space-y-8">
                   {[
@@ -825,16 +844,16 @@ export default function EnhancedPortfolio() {
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-4">
                           <span className="text-zinc-600 font-mono">{project.id}</span>
-                          <h3 className={`text-2xl font-bold group-hover:text-green-500 transition-colors ${isDarkMode ? 'text-white' : 'text-black'}`}>
+                          <h3 className={`text-2xl font-bold group-hover:text-green-500 transition-colors text-white`}>
                             {project.title}
                           </h3>
                         </div>
                         <span className="text-zinc-600">{project.year}</span>
                       </div>
-                      <p className={`mb-4 ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>{project.description}</p>
+                      <p className={`mb-4 text-zinc-400`}>{project.description}</p>
                       <div className="flex gap-2 flex-wrap">
                         {project.tech.map((tech) => (
-                          <span key={tech} className={`px-2 py-1 rounded-full bg-zinc-800/50 text-xs ${isDarkMode ? 'text-zinc-200' : 'text-white'}`}>
+                          <span key={tech} className={`px-2 py-1 rounded-full bg-zinc-800/50 text-xs text-zinc-400`}>
                             {tech}
                           </span>
                         ))}
@@ -847,7 +866,7 @@ export default function EnhancedPortfolio() {
 
             <section id="career" className="py-20">
               <div className="flex items-center justify-between mb-8">
-                <h2 className={`text-3xl font-bold text-center ${isDarkMode ? 'text-white' : 'text-black'}`}>
+                <h2 className={`text-3xl font-bold text-center text-white`}>
                   Career Journey
                 </h2>
                 <motion.a
@@ -875,13 +894,13 @@ export default function EnhancedPortfolio() {
                     </div>
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
-                        <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-black'}`}>
+                        <h3 className={`text-xl font-bold text-white`}>
                           Software Engineer
                         </h3>
                         <span className="text-green-500 font-mono text-sm">Jul 2024 - Present</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={`font-semibold ${isDarkMode ? 'text-zinc-300' : 'text-gray-700'}`}>DViO Digital</span>
+                        <span className={`font-semibold text-zinc-300`}>DViO Digital</span>
                         <span className="text-zinc-500">•</span>
                         <span className="text-zinc-500">Pune</span>
                       </div>
@@ -914,7 +933,7 @@ export default function EnhancedPortfolio() {
                       </ul>
                       <div className="flex flex-wrap gap-2 pt-2">
                         {['React', 'React Router v7', 'Tailwind', 'FastAPI', 'Python', 'Snowflake', 'Docker', '3rd Party Integrations'].map((tech) => (
-                          <span key={tech} className={`px-2 py-1 rounded-full bg-zinc-800/50 text-xs ${isDarkMode ? 'text-zinc-200' : 'text-white'}`}>
+                          <span key={tech} className={`px-2 py-1 rounded-full bg-zinc-800/50 text-xs text-zinc-400`}>
                             {tech}
                           </span>
                         ))}
@@ -932,13 +951,13 @@ export default function EnhancedPortfolio() {
                     </div>
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
-                        <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-black'}`}>
+                        <h3 className={`text-xl font-bold text-white`}>
                           Full Stack Developer Intern
                         </h3>
                         <span className="text-blue-500 font-mono text-sm">Jan 2024 - Mar 2024</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={`font-semibold ${isDarkMode ? 'text-zinc-300' : 'text-gray-700'}`}>O2H Tech</span>
+                        <span className={`font-semibold text-zinc-300`}>O2H Tech</span>
                         <span className="text-zinc-500">•</span>
                         <span className="text-zinc-500">Ahmedabad</span>
                       </div>
@@ -965,7 +984,7 @@ export default function EnhancedPortfolio() {
                       </ul>
                       <div className="flex flex-wrap gap-2 pt-2">
                         {['React', 'MongoDB', 'Express', 'Node', 'SQL'].map((tech) => (
-                          <span key={tech} className={`px-2 py-1 rounded-full bg-zinc-800/50 text-xs ${isDarkMode ? 'text-zinc-200' : 'text-white'}`}>
+                          <span key={tech} className={`px-2 py-1 rounded-full bg-zinc-800/50 text-xs text-zinc-400`}>
                             {tech}
                           </span>
                         ))}
@@ -984,13 +1003,13 @@ export default function EnhancedPortfolio() {
                     </div>
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
-                        <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-black'}`}>
+                        <h3 className={`text-xl font-bold text-white`}>
                           Bachelor of Engineering in Computer Science
                         </h3>
                         <span className="text-purple-500 font-mono text-sm">Graduated Jun 2024</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={`font-semibold ${isDarkMode ? 'text-zinc-300' : 'text-gray-700'}`}>
+                        <span className={`font-semibold text-zinc-300`}>
                           Trinity Academy of Engineering
                         </span>
                         <span className="text-zinc-500">•</span>
@@ -1001,7 +1020,7 @@ export default function EnhancedPortfolio() {
                       </div>
                       <div className="flex flex-wrap gap-2 pt-2">
                         {['Software Development', 'Artificial Intelligence', 'Data Structures', 'Algorithms', 'Computer Networks', 'Operating Systems'].map((subject) => (
-                          <span key={subject} className={`px-2 py-1 rounded-full bg-zinc-800/50 text-xs ${isDarkMode ? 'text-zinc-200' : 'text-white'}`}>
+                          <span key={subject} className={`px-2 py-1 rounded-full bg-zinc-800/50 text-xs text-zinc-400`}>
                             {subject}
                           </span>
                         ))}
@@ -1013,7 +1032,7 @@ export default function EnhancedPortfolio() {
             </section>
 
             <section id="contact" className="py-20">
-              <h2 className={`text-3xl font-bold mb-8 text-center ${isDarkMode ? 'text-white' : 'text-black'}`}>Contact</h2>
+              <h2 className={`text-3xl font-bold mb-8 text-center text-white`}>Contact</h2>
               <div className="grid  gap-6">
 
 
@@ -1031,11 +1050,11 @@ export default function EnhancedPortfolio() {
                           whileHover={contact.href ? { x: 4 } : {}}
                           className={`group flex items-center gap-4 p-2 rounded-md ${contact.href ? 'hover:bg-zinc-600' : ''} transition-colors`}
                         >
-                          <contact.icon className={`${isDarkMode ? 'text-zinc-300' : 'text-zinc-600'} ${contact.href ? 'group-hover:text-green-500' : ''} transition-colors`} />
+                          <contact.icon className={`text-zinc-300 ${contact.href ? 'group-hover:text-green-500' : ''} transition-colors`} />
                           {contact.href ? (
-                            <a href={contact.href} className={`${isDarkMode ? 'text-zinc-300 group-hover:text-green-500' : "text-zinc-600 group-hover:text-green-500"}  transition-colors`}>{contact.label}</a>
+                            <a href={contact.href} className={`text-zinc-300 group-hover:text-green-500  transition-colors`}>{contact.label}</a>
                           ) : (
-                            <span className={`${isDarkMode ? 'text-zinc-300' : 'text-zinc-600'}`}>{contact.label}</span>
+                            <span className={`text-zinc-300`}>{contact.label}</span>
                           )}
                         </motion.div>
                       ))}
@@ -1054,8 +1073,8 @@ export default function EnhancedPortfolio() {
                             whileHover={{ x: 4 }}
                             className="group flex items-center gap-4 p-2 rounded-md hover:bg-zinc-800/50 transition-colors"
                           >
-                            <social.icon className={`${isDarkMode ? 'text-zinc-300' : 'text-zinc-600'} group-hover:text-green-500 transition-colors`} />
-                            <a href={social.href} className={`${isDarkMode ? 'text-zinc-300' : 'text-zinc-600'} group-hover:text-green-500 transition-colors`}>{social.label}</a>
+                            <social.icon className={`text-zinc-300 group-hover:text-green-500 transition-colors`} />
+                            <a href={social.href} className={`text-zinc-300 group-hover:text-green-500 transition-colors`}>{social.label}</a>
                             <ArrowUpRight className="text-zinc-600 w-4 h-4 group-hover:text-green-500 transition-colors ml-auto" />
                           </motion.div>
                         ))}
@@ -1073,7 +1092,7 @@ export default function EnhancedPortfolio() {
                           <div className="w-3 h-3 rounded-full bg-green-500"></div>
                           <div className="absolute inset-0 w-3 h-3 rounded-full bg-green-500 animate-ping"></div>
                         </div>
-                        <span className={`${isDarkMode ? 'text-zinc-300' : 'text-zinc-800'}`}>Available for new opportunities</span>
+                        <span className='text-zinc-300'>Available for new opportunities</span>
                       </motion.div>
                     </div>
                   </div>
