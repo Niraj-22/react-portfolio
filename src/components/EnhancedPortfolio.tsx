@@ -677,13 +677,13 @@ export default function EnhancedPortfolio() {
                         <span className="text-zinc-600 select-none">01</span>
                         <span className='text-white'>
                           Hi! I'm <span className="text-green-500 font-semibold">Niraj Chordia</span>,
-                          a <span className="text-blue-400 font-semibold">Frontend Developer</span> at DViO Digital.
+                          a <span className="text-blue-400 font-semibold">Software Developer</span> at DViO Digital.
                         </span>
                       </div>
                       <div className="flex gap-4 items-center hover:bg-zinc-800/50 px-2 py-4 rounded transition-colors">
                         <span className="text-zinc-600 select-none">02</span>
                         <span className='text-white'>
-                          With <span className="text-yellow-500">10+ months</span> of experience in building
+                          With <span className="text-yellow-500">1+ years</span> of experience in building
                           <span className="text-purple-400"> scalable applications</span>
                         </span>
                       </div>
@@ -718,7 +718,7 @@ export default function EnhancedPortfolio() {
                       <div className="flex gap-4 items-center hover:bg-zinc-800/50 px-2 py-4 rounded transition-colors">
                         <span className="text-zinc-600 select-none">07</span>
                         <span className='text-white'>
-                          Proven ability to manage entire <span className="text-green-400">frontend projects independently</span> from
+                          Proven ability to manage entire <span className="text-green-400"> projects independently</span> from
                           <span className="text-blue-400"> ideation to deployment.</span>
                         </span>
                       </div>
